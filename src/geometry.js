@@ -43,7 +43,7 @@ class Point {
   dot(point) { return (this.x * point.x) + (this.y * point.y); }
   cross(point) { return (this.x * point.y) - (this.y * point.x); }
   midPoint(point) { return new Point((this.x + point.x) / 2, (this.y + point.y) / 2); }
-  rotate(angle) { return this.mult(Pt(Math.cos(angle),Math.sin(angle))); }
+  rotate(angle, origin = Pt(0,0)) { return (this.minus(origin)).mult(Pt(Math.cos(angle),Math.sin(angle))).plus(origin); }
   mult(obj) {
     if (obj instanceof Point) {
       return new Point((this.x * obj.x) - (this.y * obj.y), (this.y * obj.x) + (this.x * obj.y));
@@ -178,6 +178,9 @@ class Rectangle {
     this.points.push(new Point(p1.x, p2.y));
     this.min = new Point(Math.min(p1.x,p2.x),Math.min(p1.y,p2.y));
     this.max = new Point(Math.max(p1.x,p2.x),Math.max(p1.y,p2.y));
+    this.size = this.max.minus(this.min);
+    this.width = this.size.x;
+    this.height = this.size.y;
   }
 
   contain(p) { return Num(p.x).in(this.min.x,this.max.x) && Num(p.y).in(this.min.y,this.max.y); }
@@ -383,7 +386,7 @@ const Num = x => new ToleranceNumber(x);
 const Pt = (x,y) => new Point(x,y);
 const Polar = (r, t) => new Point(r * Math.cos(t), r * Math.sin(t));
 const Cir = function(arg0,arg1, arg2) { if (typeof(arg0) === 'number') { return new Circle(Pt(arg0,arg1), arg2); } else { return new Circle(arg0, arg1); } };
-let Sect = function(center, radius, startAngle, angleSize, anticlockwise) {
+const Sect = function(center, radius, startAngle, angleSize, anticlockwise) {
   if (anticlockwise == null) { anticlockwise = true; }
   return new Sector(center, radius, startAngle, angleSize, anticlockwise);
 };
